@@ -1,70 +1,79 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <AssemblyName>FontPatcher</AssemblyName>
-    <Description>Replace in-game font with other things</Description>
-    <Version>1.2.4</Version>
-    <Authors>LeKAKiD</Authors>
-    <RootNamespace>FontPatcher</RootNamespace>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RestoreAdditionalProjectSources>
-      https://api.nuget.org/v3/index.json;
-      https://nuget.bepinex.dev/v3/index.json;
-      https://nuget.samboy.dev/v3/index.json
-    </RestoreAdditionalProjectSources>
-    <LangVersion>latest</LangVersion>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net48</TargetFramework>
+        <AssemblyName>FontPatcher</AssemblyName>
+        <Description>Replace in-game font with other things</Description>
+        <Version>1.0.0</Version>
+        <Authors>LeKAKiD, IrisAinsworth</Authors>
+        <RootNamespace>FontPatcher</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <RestoreAdditionalProjectSources>
+            https://api.nuget.org/v3/index.json;
+            https://nuget.bepinex.dev/v3/index.json;
+            https://nuget.samboy.dev/v3/index.json
+        </RestoreAdditionalProjectSources>
+        <LangVersion>latest</LangVersion>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>.\build</OutputPath>
-    <DebugType>None</DebugType>
-    <LethalCompanyDir>C:/Program Files (x86)/Steam/steamapps/common/Lethal Company/Lethal Company_Data/Managed</LethalCompanyDir>
-    <ModPath>$(appdata)\r2modmanPlus-local\LethalCompany\profiles\Default\BepInEx\plugins\$(Authors)-$(AssemblyName)\</ModPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputPath>.\build</OutputPath>
+        <DebugType>None</DebugType>
+        <RepoDir>C:\Program Files (x86)\Steam\steamapps\common\REPO\REPO_Data\Managed</RepoDir>
+        <ModPath>$(appdata)\r2modmanPlus-local\REPO\profiles\Default\BepInEx\plugins\$(Authors)-$(AssemblyName)\</ModPath>
+    </PropertyGroup>
 
-  <Target Name="CopyForTest" AfterTargets="Build" Condition="'$(Configuration)' != 'Release'">
-    <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="$(ModPath)" Condition="Exists('$(ModPath)')" />
-  </Target>
+    <Target Name="CopyForTest" AfterTargets="Build" Condition="'$(Configuration)' != 'Release'">
+        <Copy SourceFiles="$(OutputPath)\$(AssemblyName).dll" DestinationFolder="$(ModPath)" Condition="Exists('$(ModPath)')" />
+    </Target>
 
-  <Target Name="Bundling" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' or !Exists('$(ModPath)')">
+    <!--
+    <Target Name="Bundling" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' or !Exists('$(ModPath)')">
+        <ItemGroup>
+            <ModPackPath Include="$(OutputPath)\*.zip" />
+        </ItemGroup>
+        <Delete Files="@(ModPackPath)" />
+        <Delete Files="$(OutputPath)\$(AssemblyName).deps.json" />
+        <Exec Command="tcli build package-version $(BepInExPluginVersion)" />
+    </Target>
+    -->
+
     <ItemGroup>
-      <ModPackPath Include="$(OutputPath)\*.zip" />
+        <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+        <PackageReference Include="BepInEx.Core" Version="5.*" />
+        <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+        <Reference Include="Assembly-CSharp">
+            <HintPath>$(RepoDir)/Assembly-CSharp.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine">
+            <HintPath>$(RepoDir)/UnityEngine.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.AssetBundleModule">
+            <HintPath>$(RepoDir)/UnityEngine.AssetBundleModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.CoreModule">
+            <HintPath>$(RepoDir)/UnityEngine.CoreModule.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="UnityEngine.UI">
+            <HintPath>$(RepoDir)/UnityEngine.UI.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="Unity.InputSystem">
+            <HintPath>$(RepoDir)/Unity.InputSystem.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
+        <Reference Include="TMPro">
+            <HintPath>$(RepoDir)/Unity.TextMeshPro.dll</HintPath>
+            <Private>false</Private>
+        </Reference>
     </ItemGroup>
-    <Delete Files="@(ModPackPath)" />
-    <Delete Files="$(OutputPath)\$(AssemblyName).deps.json" />
-    <Exec Command="tcli build --package-version $(BepInExPluginVersion)" />
-  </Target>
 
-  <ItemGroup>
-    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
-    <PackageReference Include="BepInEx.Core" Version="5.*" />
-    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
-    <PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(LethalCompanyDir)/Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.Netcode.Runtime">
-      <HintPath>$(LethalCompanyDir)/Unity.Netcode.Runtime.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.UI">
-      <HintPath>$(LethalCompanyDir)/UnityEngine.UI.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Unity.InputSystem">
-      <HintPath>$(LethalCompanyDir)/Unity.InputSystem.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="TMPro">
-      <HintPath>$(LethalCompanyDir)/Unity.TextMeshPro.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
-  </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    </ItemGroup>
 </Project>

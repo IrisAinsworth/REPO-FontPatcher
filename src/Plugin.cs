@@ -7,7 +7,7 @@ namespace FontPatcher;
 
 class PluginInfo
 {
-    public const string GUID = "lekakid.lcfontpatcher";
+    public const string GUID = "iris.repo.fontpatcher";
     public const string Name = MyPluginInfo.PLUGIN_NAME;
     public const string Version = MyPluginInfo.PLUGIN_VERSION;
 }
@@ -48,21 +48,21 @@ class Plugin : BaseUnityPlugin
         configNormalRegexPattern = Config.Bind(
             "Regex",
             "NormalFontNameRegex",
-            @"^(b|DialogueText|3270.*)$",
-            "Normally, you don't neet to change it"
+            ".*",
+            "Normally, you don't need to change it"
         );
 
         configTransmitRegexPattern = Config.Bind(
             "Regex",
             "TransmitFontNameRegex",
-            @"^edunline.*$",
-            "Normally, you don't neet to change it"
+            ".*",
+            "Normally, you don't need to change it"
         );
 
         configFontAssetPath = Config.Bind(
             "Path",
             "FontAssetsPath",
-            @"FontPatcher\default"
+            @"FontPatcher"
         );
 
         configDebugLog = Config.Bind(
@@ -73,6 +73,8 @@ class Plugin : BaseUnityPlugin
 
         FontLoader.Load();
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
+        Plugin.LogInfo("Initialization of the FontPatcher plugin...");
     }
 
     public static void LogInfo(string msg)
